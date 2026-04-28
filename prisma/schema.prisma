@@ -18,7 +18,7 @@ model User {
 
 model Author {
   id    Int    @id @default(autoincrement())
-  name  String
+  name  String @unique
   bio   String?
   books Book[]
 }
@@ -27,7 +27,7 @@ model Book {
   id             Int          @id @default(autoincrement())
   title          String
   description    String?
-  isbn           String?
+  isbn           String @unique
   publishedDate  DateTime @default(now())
   authorId       Int
   author         Author       @relation(fields: [authorId], references: [id])
@@ -42,8 +42,10 @@ model Borrowing {
   returnDate  DateTime?
   status      Status   @default(BORROWED)
 
-  user User @relation(fields: [userId], references: [id])
-  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId, status])
 }
 
 enum Role {
